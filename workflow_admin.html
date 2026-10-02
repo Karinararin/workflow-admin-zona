@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Sistem — Manajemen Bimbel Zona Belajar - By Karina</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --navy-deep: #071627;
+    --navy: #0c2138;
+    --navy-panel: #0e2740;
+    --line: #6fb8d9;
+    --line-bright: #bfe6f7;
+    --ink: #dcecf4;
+    --ink-dim: #8fa9bc;
+    --amber: #ff9a3d;
+    --red: #ff5d5d;
+    --green: #52d38a;
+    --taruna: #4da6ff;
+    --sma: #52d38a;
+    --sekdin: #c99bff;
+    --grid: rgba(111,184,217,0.09);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 28px),
+      var(--navy-deep);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    padding:0 0 80px 0;
+  }
+
+  a{color:var(--line-bright);}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  /* ===== corner ticks used on panels ===== */
+  .tick{position:absolute;width:16px;height:16px;pointer-events:none;}
+  .tick::before,.tick::after{content:"";position:absolute;background:var(--line);}
+  .tl{top:-1px;left:-1px;} .tr{top:-1px;right:-1px;} .bl{bottom:-1px;left:-1px;} .br{bottom:-1px;right:-1px;}
+  .tick::before{width:16px;height:2px;top:0;left:0;}
+  .tick::after{width:2px;height:16px;top:0;left:0;}
+  .tr::before{left:auto;right:0;} .tr::after{left:auto;right:0;}
+  .bl::before{top:auto;bottom:0;} .bl::after{top:auto;bottom:0;}
+  .br::before{top:auto;bottom:0;left:auto;right:0;} .br::after{top:auto;bottom:0;left:auto;right:0;}
+
+  /* ===== cover ===== */
+  .cover{
+    position:relative;
+    min-height:78vh;
+    display:flex;flex-direction:column;justify-content:center;
+    border-bottom:1px solid rgba(111,184,217,0.35);
+    padding:60px 24px 70px;
+  }
+  .cover-inner{max-width:1080px;margin:0 auto;width:100%;position:relative;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.22em;
+    font-size:12px;
+    color:var(--line);
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--line);display:inline-block;}
+  h1.big{
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:clamp(38px,6vw,68px);
+    line-height:1.02;
+    margin:18px 0 10px;
+    letter-spacing:-0.01em;
+    color:var(--line-bright);
+  }
+  .big em{font-style:normal;color:var(--amber);}
+  .subhead{font-size:18px;color:var(--ink-dim);max-width:640px;margin-bottom:36px;}
+  .meta-strip{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border-top:1px solid rgba(111,184,217,0.35);
+    border-bottom:1px solid rgba(111,184,217,0.35);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;
+  }
+  .meta-strip div{padding:14px 16px;border-right:1px solid rgba(111,184,217,0.2);}
+  .meta-strip div:last-child{border-right:none;}
+  .meta-strip .lbl{color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;font-size:10px;margin-bottom:4px;}
+  .meta-strip .val{color:var(--line-bright);font-size:13px;}
+
+  /* ===== sheet sections ===== */
+  .sheet{position:relative;margin:70px auto 0;padding:34px 34px 40px;border:1px dashed rgba(111,184,217,0.45);background:rgba(14,39,64,0.35);}
+  .sheet-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid rgba(111,184,217,0.35);padding-bottom:14px;margin-bottom:28px;flex-wrap:wrap;gap:8px;}
+  .sheet-num{font-family:'IBM Plex Mono',monospace;color:var(--line);font-size:12px;letter-spacing:.15em;}
+  .sheet-title{font-size:26px;font-weight:800;color:var(--line-bright);margin:2px 0 0;}
+  .sheet-scale{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);text-align:right;letter-spacing:.08em;}
+
+  h3.sub{font-size:15px;font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;color:var(--amber);text-transform:uppercase;margin:30px 0 14px;}
+  h3.sub:first-of-type{margin-top:0;}
+  p{color:var(--ink);margin:0 0 12px;font-size:15px;}
+  ul{margin:0 0 14px;padding-left:20px;}
+  li{margin-bottom:8px;font-size:15px;color:var(--ink);}
+  .dim{color:var(--ink-dim);font-size:13.5px;}
+
+  /* two-col problem/solution */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+  .card{border:1px solid rgba(111,184,217,0.3);padding:18px 20px;background:rgba(7,22,39,0.4);position:relative;}
+  .card h4{margin:0 0 10px;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;}
+  .card.problem h4{color:var(--red);}
+  .card.solution h4{color:var(--green);}
+
+  /* role table */
+  table{width:100%;border-collapse:collapse;margin:8px 0 20px;font-size:14px;}
+  th,td{border:1px solid rgba(111,184,217,0.28);padding:10px 12px;text-align:left;vertical-align:top;}
+  th{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--line);background:rgba(111,184,217,0.06);}
+  .swatch{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:8px;vertical-align:-1px;}
+
+  /* schema cards */
+  .schema-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:8px;}
+  @media(max-width:820px){.schema-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:520px){.schema-grid{grid-template-columns:1fr;}}
+  .schema-card{border:1px solid rgba(111,184,217,0.3);background:rgba(7,22,39,0.45);position:relative;}
+  .schema-card .sc-head{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--navy-deep);background:var(--line-bright);padding:8px 12px;font-weight:600;}
+  .schema-card ul{list-style:none;padding:10px 12px;margin:0;}
+  .schema-card li{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-dim);border-bottom:1px dotted rgba(111,184,217,0.2);padding:5px 0;margin:0;}
+  .schema-card li b{color:var(--ink);font-weight:600;}
+  .schema-card li .fk{color:var(--amber);font-size:10px;margin-left:6px;}
+
+  /* conflict signature diagram */
+  .conflict-wrap{border:1px solid rgba(111,184,217,0.3);background:rgba(7,22,39,0.5);padding:30px 24px;margin:10px 0 22px;position:relative;overflow:hidden;}
+  .flow-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:26px;}
+  .flow-step{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:center;border:1px solid rgba(111,184,217,0.4);padding:10px 12px;min-width:120px;color:var(--ink);background:rgba(14,39,64,0.6);}
+  .flow-arrow{color:var(--line);font-size:16px;}
+  .booking-row{display:flex;gap:24px;justify-content:center;align-items:center;flex-wrap:wrap;position:relative;}
+  .booking-card{width:210px;border:1px solid rgba(111,184,217,0.4);padding:14px;background:rgba(14,39,64,0.7);position:relative;}
+  .booking-card .adm{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;padding:3px 8px;display:inline-block;border-radius:2px;margin-bottom:8px;color:var(--navy-deep);font-weight:700;}
+  .booking-card .row{font-size:12.5px;color:var(--ink-dim);margin-bottom:3px;}
+  .booking-card .row b{color:var(--ink);font-weight:600;}
+  .vs{font-family:'IBM Plex Mono',monospace;color:var(--ink-dim);font-size:12px;}
+  .stamp{
+    position:absolute;top:38%;left:50%;
+    transform:translate(-50%,-50%) rotate(-14deg);
+    border:3px solid var(--red);
+    color:var(--red);
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:.1em;
+    padding:6px 18px;
+    background:rgba(7,22,39,0.55);
+    z-index:5;
+    white-space:nowrap;
+  }
+  .conflict-note{text-align:center;margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-dim);}
+
+  /* fee calc */
+  .formula-box{border:1px solid var(--amber);background:rgba(255,154,61,0.06);padding:18px 22px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--amber);margin:10px 0 22px;text-align:center;letter-spacing:.02em;}
+  .formula-box .small{display:block;font-size:11px;color:var(--ink-dim);margin-top:8px;letter-spacing:.05em;}
+  .calc-examples{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:640px){.calc-examples{grid-template-columns:1fr;}}
+  .calc-card{border:1px solid rgba(111,184,217,0.3);padding:16px;font-family:'IBM Plex Mono',monospace;font-size:13px;background:rgba(7,22,39,0.4);}
+  .calc-card .name{color:var(--line-bright);font-weight:600;margin-bottom:8px;font-size:13.5px;}
+  .calc-card .line{display:flex;justify-content:space-between;color:var(--ink-dim);padding:3px 0;border-bottom:1px dotted rgba(111,184,217,0.15);}
+  .calc-card .line b{color:var(--ink);}
+  .calc-card .total{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(111,184,217,0.4);color:var(--green);font-weight:700;}
+
+  /* dashboard widgets */
+  .widget-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:10px;}
+  @media(max-width:820px){.widget-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.widget-grid{grid-template-columns:1fr;}}
+  .widget{border:1px solid rgba(111,184,217,0.3);padding:16px;background:rgba(7,22,39,0.45);}
+  .widget .wlabel{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .widget .wval{font-size:24px;font-weight:800;color:var(--line-bright);}
+  .widget .wsub{font-size:11.5px;color:var(--ink-dim);margin-top:4px;}
+
+  /* mock table */
+  .mock-scroll{overflow-x:auto;border:1px solid rgba(111,184,217,0.3);}
+  .mock-table{min-width:920px;font-size:12.5px;}
+  .mock-table th{white-space:nowrap;}
+  .mock-table td{white-space:nowrap;}
+  .pill{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:3px;font-weight:600;}
+  .pill.done{background:rgba(82,211,138,0.15);color:var(--green);border:1px solid rgba(82,211,138,0.4);}
+  .pill.pending{background:rgba(255,154,61,0.15);color:var(--amber);border:1px solid rgba(255,154,61,0.4);}
+  .pill.resched{background:rgba(255,93,93,0.15);color:var(--red);border:1px solid rgba(255,93,93,0.4);}
+  .zone-tag{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;}
+
+  /* tech table + roadmap */
+  .roadmap{display:flex;flex-direction:column;gap:0;margin-top:6px;}
+  .rm-row{display:grid;grid-template-columns:90px 1fr;border-top:1px solid rgba(111,184,217,0.2);}
+  .rm-row:last-child{border-bottom:1px solid rgba(111,184,217,0.2);}
+  .rm-phase{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--line);padding:14px 10px;border-right:1px solid rgba(111,184,217,0.2);}
+  .rm-body{padding:14px 16px;}
+  .rm-body .rmtitle{font-weight:700;color:var(--ink);margin-bottom:4px;font-size:14.5px;}
+  .rm-body .rmdesc{color:var(--ink-dim);font-size:13px;}
+
+  footer{max-width:1080px;margin:70px auto 0;padding:24px;border-top:1px solid rgba(111,184,217,0.3);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  .legend-row{display:flex;gap:22px;flex-wrap:wrap;margin:6px 0 24px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-dim);}
+  .legend-row span{display:flex;align-items:center;}
+</style>
+</head>
+<body>
+
+  <!-- ===================== COVER ===================== -->
+  <section class="cover">
+    <div class="cover-inner">
+      <div class="eyebrow">Dokumen Perencanaan — Rev A</div>
+      <h1 class="big">Blueprint Sistem<br><em>Manajemen Bimbel</em> Zona Belajar Indonesia - by Karina</h1>
+      <p class="subhead">Satu database, satu pintu masuk. Menggantikan spreadsheet terpisah-pisah dengan sistem terpusat yang memisahkan akses per admin, mencegah tutor bentrok jadwal, dan menghitung fee tutor otomatis.</p>
+      <div class="meta-strip">
+        <div><div class="lbl">Untuk</div><div class="val">Manajemen Bimbel Multi-Institusi</div></div>
+        <div><div class="lbl">Menggantikan</div><div class="val">Google Sheets per-admin</div></div>
+        <div><div class="lbl">Jumlah Sheet</div><div class="val">9 Sheet Blueprint</div></div>
+        <div><div class="lbl">Status</div><div class="val" style="color:var(--amber)">Draft Perencanaan</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <!-- ===================== SHEET 01 — MASALAH & TUJUAN ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 01 / 09</div><h2 class="sheet-title">Masalah &amp; Tujuan</h2></div>
+        <div class="sheet-scale">REF — LATAR BELAKANG SISTEM</div>
+      </div>
+
+      <div class="grid2">
+        <div class="card problem">
+          <h4>✕ Kondisi Sekarang</h4>
+          <ul>
+            <li>Tiap admin (Taruna, SMA, Sekdin, dst) punya sheet sendiri-sendiri.</li>
+            <li>Tidak ada yang bisa lihat gambaran keseluruhan dalam satu tempat.</li>
+            <li>Tutor yang sama bisa dipakai dua admin di jam yang sama tanpa saling tahu.</li>
+            <li>Fee tutor dihitung manual per sheet, rawan salah dan lupa update.</li>
+            <li>Rekap jumlah siswa, pendapatan, dan status kelulusan harus digabung manual.</li>
+          </ul>
+        </div>
+        <div class="card solution">
+          <h4>✓ Tujuan Sistem Baru</h4>
+          <ul>
+            <li>Satu sistem, satu database — semua admin input di tempat yang sama.</li>
+            <li>Setiap admin punya kode warna sendiri, terlihat siapa mengelola data apa.</li>
+            <li>Sistem otomatis menolak booking tutor jika sudah dipakai admin lain di jam sama.</li>
+            <li>Fee tutor terhitung otomatis: rate per pertemuan × jumlah sesi terlaksana.</li>
+            <li>Dashboard menampilkan jumlah siswa, pendapatan, fee keluar, dan status kelulusan.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SHEET 02 — STRUKTUR ROLE ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 02 / 09</div><h2 class="sheet-title">Struktur Role &amp; Kode Warna Admin</h2></div>
+        <div class="sheet-scale">REF — AKSES PENGGUNA</div>
+      </div>
+      <p>Setiap zona/program punya admin sendiri dengan warna identitas. Super Admin (pemilik bimbel) melihat semua data tergabung, lengkap dengan label warna asal admin — sehingga sekilas langsung tahu data itu milik siapa.</p>
+
+      <table>
+        <tr><th>Role</th><th>Warna</th><th>Menangani</th><th>Akses Data</th></tr>
+        <tr>
+          <td><b>Super Admin</b></td>
+          <td><span class="swatch" style="background:var(--line-bright)"></span>Putih / Netral</td>
+          <td>Pemilik / pengawas seluruh operasional</td>
+          <td>Lihat &amp; edit semua zona, semua laporan keuangan &amp; fee</td>
+        </tr>
+        <tr>
+          <td><b>Admin A</b></td>
+          <td><span class="swatch" style="background:var(--taruna)"></span>Biru</td>
+          <td>Program Taruna</td>
+          <td>Hanya data zona Taruna (siswa, jadwal, tutor, fee miliknya)</td>
+        </tr>
+        <tr>
+          <td><b>Admin B</b></td>
+          <td><span class="swatch" style="background:var(--sma)"></span>Hijau</td>
+          <td>Program SMA</td>
+          <td>Hanya data zona SMA</td>
+        </tr>
+        <tr>
+          <td><b>Admin C</b></td>
+          <td><span class="swatch" style="background:var(--sekdin)"></span>Ungu</td>
+          <td>Program Sekdin</td>
+          <td>Hanya data zona Sekdin</td>
+        </tr>
+        <tr>
+          <td class="dim">Admin baru...</td>
+          <td class="dim">Warna baru bisa ditambah</td>
+          <td class="dim">Zona/program baru</td>
+          <td class="dim">Menyusul sesuai kebutuhan</td>
+        </tr>
+      </table>
+      <p class="dim">Catatan: tutor bersifat lintas-zona — tutor X bisa dipakai Admin A dan Admin B, tapi tidak boleh di jam yang sama (lihat Sheet 04).</p>
+    </section>
+
+    <!-- ===================== SHEET 03 — SKEMA DATABASE ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 03 / 09</div><h2 class="sheet-title">Skema Database</h2></div>
+        <div class="sheet-scale">REF — STRUKTUR TABEL</div>
+      </div>
+      <p>Tujuh tabel inti. Semua admin menulis ke tabel yang sama; yang membedakan hanya kolom <b>zona_id</b> dan <b>admin_id</b> di tiap baris.</p>
+
+      <div class="schema-grid">
+        <div class="schema-card">
+          <div class="sc-head">ADMIN</div>
+          <ul>
+            <li><b>admin_id</b> <span class="fk">PK</span></li>
+            <li>nama_admin</li>
+            <li>role (super / zona)</li>
+            <li>warna_kode</li>
+            <li>zona_id <span class="fk">FK</span></li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">ZONA / PROGRAM</div>
+          <ul>
+            <li><b>zona_id</b> <span class="fk">PK</span></li>
+            <li>nama_zona (Taruna, SMA, Sekdin…)</li>
+            <li>institusi_tujuan</li>
+            <li>warna_kode</li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">SISWA</div>
+          <ul>
+            <li><b>siswa_id</b> <span class="fk">PK</span></li>
+            <li>nama_siswa</li>
+            <li>zona_id <span class="fk">FK</span></li>
+            <li>status_kelulusan (lolos/belum/proses)</li>
+            <li>status_bayar</li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">TUTOR</div>
+          <ul>
+            <li><b>tutor_id</b> <span class="fk">PK</span></li>
+            <li>nama_tutor</li>
+            <li>mapel_kuasai</li>
+            <li>kontak</li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">TUTOR_RATE</div>
+          <ul>
+            <li><b>rate_id</b> <span class="fk">PK</span></li>
+            <li>tutor_id <span class="fk">FK</span></li>
+            <li>zona_id <span class="fk">FK</span></li>
+            <li>rate_per_pertemuan (Rp — diset admin)</li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">JADWAL / SESI</div>
+          <ul>
+            <li><b>sesi_id</b> <span class="fk">PK</span></li>
+            <li>tanggal, jam</li>
+            <li>siswa_id <span class="fk">FK</span></li>
+            <li>tutor_id <span class="fk">FK</span></li>
+            <li>mapel, materi</li>
+            <li>status_terlaksana (terlaksana/belum/reschedule)</li>
+            <li>admin_id <span class="fk">FK</span></li>
+          </ul>
+        </div>
+        <div class="schema-card">
+          <div class="sc-head">PEMBAYARAN</div>
+          <ul>
+            <li><b>bayar_id</b> <span class="fk">PK</span></li>
+            <li>siswa_id <span class="fk">FK</span></li>
+            <li>nominal, tanggal_bayar</li>
+            <li>status (lunas/cicil/belum)</li>
+          </ul>
+        </div>
+      </div>
+      <p class="dim">Tabel <b>JADWAL/SESI</b> adalah pusat sistem — setiap booking tutor dicatat di sini, lintas semua admin, sehingga bisa dicek bentrok jadwal secara real-time.</p>
+    </section>
+
+    <!-- ===================== SHEET 04 — ALUR BOOKING & CEGAH BENTROK ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 04 / 09</div><h2 class="sheet-title">Alur Booking &amp; Pencegahan Bentrok Tutor</h2></div>
+        <div class="sheet-scale">REF — LOGIKA SISTEM UTAMA</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-step">Admin pilih<br>tutor + tanggal + jam</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Sistem cek tabel<br>JADWAL untuk tutor itu</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Jam sama sudah<br>terisi admin lain?</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color:var(--red);color:var(--red)">Ya → Ditolak,<br>tampilkan siapa pemakai</div>
+      </div>
+
+      <div class="conflict-wrap">
+        <div class="booking-row">
+          <div class="booking-card">
+            <span class="adm" style="background:var(--taruna)">ADMIN A · TARUNA</span>
+            <div class="row">Tutor&nbsp;: <b>RIZKY</b></div>
+            <div class="row">Tanggal&nbsp;: <b>06 Agu 2026</b></div>
+            <div class="row">Jam&nbsp;: <b>15:30</b></div>
+            <div class="row">Status&nbsp;: <b style="color:var(--green)">✓ Tersimpan lebih dulu</b></div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="booking-card">
+            <span class="adm" style="background:var(--sma)">ADMIN B · SMA</span>
+            <div class="row">Tutor&nbsp;: <b>RIZKY</b></div>
+            <div class="row">Tanggal&nbsp;: <b>06 Agu 2026</b></div>
+            <div class="row">Jam&nbsp;: <b>15:30</b></div>
+            <div class="row">Status&nbsp;: <b style="color:var(--red)">✕ Coba booking belakangan</b></div>
+          </div>
+        </div>
+        <div class="stamp">SLOT TERPAKAI</div>
+        <div class="conflict-note">Admin B tidak bisa menyimpan jadwal ini. Sistem menampilkan: "Tutor RIZKY sudah dibooking Admin A pada 06 Agu 2026, 15:30" — Admin B otomatis diarahkan memilih jam lain atau tutor lain.</div>
+      </div>
+
+      <h3 class="sub">Aturan Validasi</h3>
+      <ul>
+        <li>Kunci unik = kombinasi <b>tutor_id + tanggal + jam</b>, berlaku lintas semua admin/zona.</li>
+        <li>Jika sesi diubah statusnya jadi <b>reschedule</b> atau <b>dibatalkan</b>, slot otomatis terbuka kembali untuk admin lain.</li>
+        <li>Super Admin dapat melihat kalender gabungan seluruh tutor untuk memantau slot kosong.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SHEET 05 — KALKULASI FEE ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 05 / 09</div><h2 class="sheet-title">Kalkulasi Fee Tutor Otomatis</h2></div>
+        <div class="sheet-scale">REF — LOGIKA KEUANGAN</div>
+      </div>
+      <p>Rate per pertemuan diset manual oleh admin per tutor (karena tiap tutor beda tarif). Sistem hanya mengalikan otomatis dengan jumlah sesi yang statusnya <b>Terlaksana</b> pada periode yang dipilih.</p>
+
+      <div class="formula-box">
+        FEE TUTOR&nbsp; = &nbsp;RATE PER PERTEMUAN &nbsp;×&nbsp; JUMLAH SESI TERLAKSANA
+        <span class="small">RATE diset admin saat menambahkan tutor ke zona-nya · SESI dihitung otomatis dari tabel JADWAL berstatus "Terlaksana"</span>
+      </div>
+
+      <div class="calc-examples">
+        <div class="calc-card">
+          <div class="name">Tutor: RIZKY — Zona Taruna</div>
+          <div class="line"><span>Rate / pertemuan</span><b>Rp 100.000</b></div>
+          <div class="line"><span>Sesi terlaksana (Agu 2026)</span><b>5×</b></div>
+          <div class="total"><span>Total Fee</span><span>Rp 500.000</span></div>
+        </div>
+        <div class="calc-card">
+          <div class="name">Tutor: AEZAL — Zona SMA</div>
+          <div class="line"><span>Rate / pertemuan</span><b>Rp 75.000</b></div>
+          <div class="line"><span>Sesi terlaksana (Agu 2026)</span><b>8×</b></div>
+          <div class="total"><span>Total Fee</span><span>Rp 600.000</span></div>
+        </div>
+      </div>
+      <p class="dim">Sesi berstatus "Belum Belajar" atau "Reschedule" tidak dihitung sampai statusnya berubah menjadi "Terlaksana". Rate bisa berbeda untuk tutor yang sama di zona berbeda, karena disimpan per kombinasi tutor + zona (lihat tabel TUTOR_RATE di Sheet 03).</p>
+    </section>
+
+    <!-- ===================== SHEET 06 — DASHBOARD ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 06 / 09</div><h2 class="sheet-title">Dashboard &amp; Laporan</h2></div>
+        <div class="sheet-scale">REF — RINGKASAN &amp; FILTER</div>
+      </div>
+      <p>Bisa difilter per zona, per admin, per tutor, atau per rentang tanggal. Super Admin melihat versi gabungan semua zona.</p>
+
+      <div class="widget-grid">
+        <div class="widget">
+          <div class="wlabel">Total Siswa Aktif</div>
+          <div class="wval">184</div>
+          <div class="wsub">Taruna 62 · SMA 90 · Sekdin 32</div>
+        </div>
+        <div class="widget">
+          <div class="wlabel">Pendapatan Bulan Ini</div>
+          <div class="wval">Rp 48,2jt</div>
+          <div class="wsub">dari pembayaran siswa</div>
+        </div>
+        <div class="widget">
+          <div class="wlabel">Fee Tutor Terhitung</div>
+          <div class="wval">Rp 9,6jt</div>
+          <div class="wsub">berdasarkan sesi terlaksana</div>
+        </div>
+        <div class="widget">
+          <div class="wlabel">Status Kelulusan</div>
+          <div class="wval">61%</div>
+          <div class="wsub">lolos institusi tujuan</div>
+        </div>
+      </div>
+
+      <h3 class="sub">Laporan yang tersedia</h3>
+      <ul>
+        <li>Rekap jumlah siswa per zona &amp; per status (aktif, lulus, tidak lolos, masih proses).</li>
+        <li>Rekap pendapatan per admin/zona dan total gabungan.</li>
+        <li>Rekap fee tutor per periode, siap dipakai untuk pembayaran ke tutor.</li>
+        <li>Kalender gabungan jadwal semua tutor lintas zona, untuk cek slot kosong.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SHEET 07 — MOCKUP TABEL INPUT ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 07 / 09</div><h2 class="sheet-title">Tampilan Input Jadwal (Mockup)</h2></div>
+        <div class="sheet-scale">REF — SETARA SHEET LAMA, TERPUSAT</div>
+      </div>
+      <p>Kolom mengikuti kebiasaan spreadsheet yang sudah dipakai, hanya sekarang semua admin menulis ke tabel yang sama — dibedakan lewat tag warna zona.</p>
+
+      <div class="legend-row">
+        <span><span class="zone-tag" style="background:var(--taruna)"></span>Taruna — Admin A</span>
+        <span><span class="zone-tag" style="background:var(--sma)"></span>SMA — Admin B</span>
+        <span><span class="zone-tag" style="background:var(--sekdin)"></span>Sekdin — Admin C</span>
+      </div>
+
+      <div class="mock-scroll">
+        <table class="mock-table">
+          <tr>
+            <th>Zona</th><th>Status Belajar</th><th>Nama Siswa</th><th>Tanggal</th><th>Jam</th><th>Mapel</th><th>Materi</th><th>Tutor</th><th>Status</th><th>PJ Admin</th><th>Fee</th><th>Bayar</th>
+          </tr>
+          <tr>
+            <td><span class="zone-tag" style="background:var(--taruna)"></span>Taruna</td>
+            <td><span class="pill pending">Belum Belajar</span></td>
+            <td>Elisa</td><td>Rabu, 06 Agu 2026</td><td>15:30</td><td>APO PPDS</td><td>APO 1.2.3</td><td>Rizky</td>
+            <td><span class="pill pending">Pending</span></td><td>Aezal</td><td>Rp 100.000</td><td>—</td>
+          </tr>
+          <tr>
+            <td><span class="zone-tag" style="background:var(--sma)"></span>SMA</td>
+            <td><span class="pill done">Sudah Belajar</span></td>
+            <td>Bagas</td><td>Kamis, 07 Agu 2026</td><td>16:00</td><td>Matematika</td><td>Trigonometri</td><td>Aezal</td>
+            <td><span class="pill done">Terlaksana</span></td><td>Bunga</td><td>Rp 75.000</td><td>Lunas</td>
+          </tr>
+          <tr>
+            <td><span class="zone-tag" style="background:var(--sekdin)"></span>Sekdin</td>
+            <td><span class="pill resched">Reschedule</span></td>
+            <td>Citra</td><td>Kamis, 07 Agu 2026</td><td>15:30</td><td>TPA</td><td>Sinonim-Antonim</td><td>Rizky</td>
+            <td><span class="pill resched">Reschedule</span></td><td>Dedi</td><td>—</td><td>Cicil</td>
+          </tr>
+        </table>
+      </div>
+      <p class="dim">Baris "Citra" dipindah jam karena slot Rizky 15:30 sudah dipakai Elisa (zona Taruna) — dicegah otomatis sesuai Sheet 04.</p>
+    </section>
+
+    <!-- ===================== SHEET 08 — TECH STACK ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 08 / 09</div><h2 class="sheet-title">Rekomendasi Teknis</h2></div>
+        <div class="sheet-scale">REF — DARI SPREADSHEET KE SISTEM</div>
+      </div>
+      <table>
+        <tr><th>Bagian</th><th>Spreadsheet (Sekarang)</th><th>Sistem Baru (Diusulkan)</th></tr>
+        <tr><td>Data</td><td>Terpisah per sheet/tab admin</td><td>Satu database terpusat, semua admin akses tabel yang sama</td></tr>
+        <tr><td>Login</td><td>Tidak ada, siapa saja bisa buka</td><td>Login per admin dengan hak akses sesuai zona (role-based)</td></tr>
+        <tr><td>Cegah bentrok</td><td>Manual, harus tanya-tanya dulu</td><td>Otomatis dicek sistem saat booking disimpan</td></tr>
+        <tr><td>Hitung fee</td><td>Rumus manual per sheet</td><td>Otomatis dari rate × sesi terlaksana</td></tr>
+        <tr><td>Laporan</td><td>Rekap manual gabung sheet</td><td>Dashboard real-time, bisa difilter</td></tr>
+      </table>
+      <p class="dim">Domain terpisah dari sistem lama, dibangun sebagai aplikasi web dengan login, agar tetap terasa seperti input di tabel/spreadsheet namun dengan validasi &amp; perhitungan otomatis di baliknya.</p>
+    </section>
+
+    <!-- ===================== SHEET 09 — ROADMAP ===================== -->
+    <section class="sheet">
+      <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+      <div class="sheet-head">
+        <div><div class="sheet-num">SHEET 09 / 09</div><h2 class="sheet-title">Roadmap Pengembangan</h2></div>
+        <div class="sheet-scale">REF — TAHAPAN BUILD</div>
+      </div>
+      <div class="roadmap">
+        <div class="rm-row">
+          <div class="rm-phase">FASE 1</div>
+          <div class="rm-body"><div class="rmtitle">Fondasi &amp; Login Admin</div><div class="rmdesc">Setup database, buat akun admin per zona dengan kode warna, hak akses dasar.</div></div>
+        </div>
+        <div class="rm-row">
+          <div class="rm-phase">FASE 2</div>
+          <div class="rm-body"><div class="rmtitle">Modul Jadwal &amp; Anti-Bentrok</div><div class="rmdesc">Form input jadwal (tanggal, jam, siswa, tutor, mapel, materi) lengkap dengan validasi bentrok tutor real-time.</div></div>
+        </div>
+        <div class="rm-row">
+          <div class="rm-phase">FASE 3</div>
+          <div class="rm-body"><div class="rmtitle">Fee Otomatis &amp; Pembayaran</div><div class="rmdesc">Setting rate per tutor per zona, kalkulasi fee otomatis, pencatatan pembayaran siswa.</div></div>
+        </div>
+        <div class="rm-row">
+          <div class="rm-phase">FASE 4</div>
+          <div class="rm-body"><div class="rmtitle">Dashboard &amp; Laporan Kelulusan</div><div class="rmdesc">Rekap siswa, pendapatan, fee tutor, dan status lolos/tidak di institusi tujuan — bisa diekspor.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div>BLUEPRINT — SISTEM MANAJEMEN BIMBEL MULTI-ZONA</div>
+    <div>REV A · DRAFT PERENCANAAN · NOT TO SCALE</div>
+  </footer>
+
+</body>
+</html>
